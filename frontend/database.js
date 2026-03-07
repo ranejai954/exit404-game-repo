@@ -1,7 +1,7 @@
 // database.js - Database functions for EXIT 404
 
-// Correct backend URL (Railway backend)
-const API_BASE_URL = "https://exit404-game-repo-production.up.railway.app";
+// Railway backend URL
+const API_BASE_URL = "https://exit404-game-repo-production.up.railway.app/api";
 
 let currentPlayerId = null;
 
@@ -34,7 +34,7 @@ async function registerPlayer(playerName) {
         return false;
 
     } catch (error) {
-        console.error("Database offline, using localStorage:", error);
+        console.error("Database offline:", error);
         return false;
     }
 }
@@ -67,7 +67,7 @@ async function saveScore(totalScore, endingType) {
         return false;
 
     } catch (error) {
-        console.error("Failed to save score to database:", error);
+        console.error("Failed to save score:", error);
         return false;
     }
 }
@@ -95,7 +95,7 @@ async function getLeaderboard() {
 // Test database connection
 async function testDatabase() {
     try {
-        const response = await fetch(`${API_BASE_URL}/testdb`);
+        const response = await fetch(`${API_BASE_URL}/test-db`);
         const data = await response.json();
         return data.success;
 
