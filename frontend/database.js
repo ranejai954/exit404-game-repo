@@ -1,5 +1,5 @@
 // database.js - Simplified database functions
-const API_BASE_URL = 'fetch("https://exit404-game-repo-production.up.railway.app/save")';
+const API_BASE_URL = 'https://exit404-game-repo-production.up.railway.app/save';
 let currentPlayerId = null;
 
 // Register player
@@ -75,7 +75,7 @@ async function getLeaderboard() {
 // Test database connection
 async function testDatabase() {
     try {
-        const response = await fetch(`${API_BASE_URL}/test-db`);
+        const response = await fetch(`${https://exit404-game-repo-production.up.railway.app/testdb}/test-db`);
         const data = await response.json();
         return data.success;
     } catch (error) {
