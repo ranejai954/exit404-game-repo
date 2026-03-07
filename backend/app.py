@@ -155,6 +155,35 @@ def test_db():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route("/api/init-db")
+def init_db():
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS players (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        player_name VARCHAR(50) UNIQUE NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS scores (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        player_name VARCHAR(50),
+        total_score INT,
+        ending_type VARCHAR(20),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return {"success": True, "message": "Tables created"}
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
