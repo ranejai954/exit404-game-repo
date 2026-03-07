@@ -8,10 +8,11 @@ CORS(app)
 
 # Database configuration
 db_config = {
-    'host': os.getenv("DB_HOST", "localhost"),
-    'user': os.getenv("DB_USER", "root"),
-    'password': os.getenv("DB_PASSWORD", "root"),
-    'database': os.getenv("DB_NAME", "exit404_game")
+    "host": os.getenv("MYSQLHOST"),
+    "user": os.getenv("MYSQLUSER"),
+    "password": os.getenv("MYSQLPASSWORD"),
+    "database": os.getenv("MYSQLDATABASE"),
+    "port": int(os.getenv("MYSQLPORT", 3306))
 }
 
 
