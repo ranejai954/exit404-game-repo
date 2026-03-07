@@ -1,5 +1,5 @@
 // ================= DATABASE FUNCTIONS =================
- window.API_BASE_URL = 'http://localhost:5000/api'; // Flask server URL
+window.API_BASE_URL = 'https://exit404-game-repo-production.up.railway.app/api'; // Flask server URL
 let currentPlayer = {
     id: null,
     name: "John",
@@ -3582,3 +3582,25 @@ window.addEventListener('load', () => {
     
     updateHeartsDisplay();
 });
+
+async function saveScoreToDatabase(score, endingId = null) {
+    try {
+        const response = await fetch(`${window.API_BASE_URL}/score`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                player_name: currentPlayer.name || "Player",
+                score: score,
+                ending_type: endingId
+            })
+        });
+
+        const data = await response.json();
+        console.log("Score saved:", data);
+
+    } catch (error) {
+        console.error("Error saving score:", error);
+    }
+}
