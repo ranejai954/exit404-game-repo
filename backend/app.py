@@ -6,7 +6,9 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# Database config from Railway environment variables
+# -----------------------
+# DATABASE CONFIG
+# -----------------------
 db_config = {
     "host": os.getenv("MYSQLHOST"),
     "user": os.getenv("MYSQLUSER"),
@@ -15,11 +17,15 @@ db_config = {
     "port": int(os.getenv("MYSQLPORT", 3306))
 }
 
-
-# Create DB connection
+# -----------------------
+# DB CONNECTION
+# -----------------------
 def get_connection():
     return mysql.connector.connect(**db_config)
 
+# -----------------------
+# DEBUG ROUTE
+# -----------------------
 @app.route("/debug")
 def debug():
     return {
@@ -39,7 +45,6 @@ def test_db():
         return {"status": "Database connected successfully"}
     except Exception as e:
         return {"error": str(e)}
-
 
 # -----------------------
 # INITIALIZE DATABASE
@@ -77,6 +82,31 @@ def init_db():
     except Exception as e:
         return {"error": str(e)}
 
+# -----------------------
+# REGISTER PLAYER
+# -----------------------
+@app.route("/api/register", methods=["POST"])
+def register_player():
+    try:
+        data = request.json
+        player_name = data.get("player_name")
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "INSERT IGNORE INTO players (player_name) VALUES (%s)",
+            (player_name,)
+        )
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return {"success": True}
+
+    except Exception as e:
+        return {"error": str(e)}
 
 # -----------------------
 # SAVE SCORE
@@ -85,6 +115,7 @@ def init_db():
 def save_score():
     try:
         data = request.json
+
         player_name = data.get("player_name")
         total_score = data.get("total_score")
         ending_type = data.get("ending_type")
@@ -105,7 +136,6 @@ def save_score():
 
     except Exception as e:
         return {"error": str(e)}
-
 
 # -----------------------
 # LEADERBOARD
@@ -133,7 +163,6 @@ def leaderboard():
     except Exception as e:
         return {"error": str(e)}
 
-
 # -----------------------
 # ROOT
 # -----------------------
@@ -141,6 +170,8 @@ def leaderboard():
 def home():
     return {"message": "Game backend running"}
 
-
+# -----------------------
+# RUN SERVER
+# -----------------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
