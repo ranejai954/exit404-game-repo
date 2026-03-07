@@ -20,6 +20,13 @@ db_config = {
 def get_connection():
     return mysql.connector.connect(**db_config)
 
+@app.route("/debug")
+def debug():
+    return {
+        "host": os.getenv("MYSQLHOST"),
+        "user": os.getenv("MYSQLUSER"),
+        "db": os.getenv("MYSQLDATABASE")
+    }
 
 # -----------------------
 # TEST DATABASE
