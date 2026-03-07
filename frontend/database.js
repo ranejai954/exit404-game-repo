@@ -1,5 +1,5 @@
 // database.js - Simplified database functions
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'fetch("https://exit404-game-repo-production.up.railway.app/save")';
 let currentPlayerId = null;
 
 // Register player
