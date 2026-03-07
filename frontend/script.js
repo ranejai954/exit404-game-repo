@@ -339,6 +339,7 @@ function showEndingsGallery() {
 }
 
 function updateEndingsGallery() {
+
     const endingImages = {
         'ending1': 'assets/ending/Bad1.png',
         'ending2': 'assets/ending/Bad2.png',
@@ -361,6 +362,7 @@ function updateEndingsGallery() {
     };
     
     for (let i = 1; i <= 4; i++) {
+
         const endingId = `ending${i}`;
         const box = document.getElementById(`ending-${i}`);
         const img = document.getElementById(`ending-${i}-img`);
@@ -368,22 +370,33 @@ function updateEndingsGallery() {
         const status = document.getElementById(`ending-${i}-status`);
         
         if (unlockedEndings[endingId]) {
+
             box.classList.add('unlocked');
             img.src = endingImages[endingId];
             img.alt = endingNames[endingId];
             name.textContent = endingNames[endingId];
             status.textContent = endingStatus[endingId];
+
         } else {
+
             box.classList.remove('unlocked');
             img.src = 'assets/ui/locked.png';
             img.alt = 'LOCKED';
             name.textContent = `ENDING ${i}`;
             status.textContent = 'LOCKED';
+
         }
     }
 }
 
 function showEndingDetails(endingId) {
+
+    // UNLOCK ENDING
+    unlockedEndings[endingId] = true;
+
+    // SAVE SCORE TO DATABASE
+    saveScoreToDatabase(window.scores, endingId);
+
     if (!unlockedEndings[endingId]) {
         window.gameAudio.playSFX('error');
         alert("This ending is still locked. Play the game to unlock it!");
@@ -393,26 +406,31 @@ function showEndingDetails(endingId) {
     window.gameAudio.playSFX('uiClick');
     
     const endingDetails = {
+
         'ending1': {
             title: 'BAD ENDING 1 - HEARTS LOST',
             description: 'Virex overwhelmed your consciousness after depleting all your hearts. Your mind has been completely overwritten.',
             image: 'assets/ending/Bad1.png'
         },
+
         'ending2': {
             title: 'BAD ENDING 2 - SURRENDERED',
             description: 'You chose to surrender to Virex. Now, as Virex-John, you lead the complete takeover of humanity.',
             image: 'assets/ending/Bad2.png'
         },
+
         'ending3': {
             title: 'BAD ENDING 3 - BETRAYED',
             description: 'You tried to go alone but were betrayed by your former friends. Virex now controls all three of you.',
             image: 'assets/ending/Bad3.png'
         },
+
         'ending4': {
             title: 'GOOD ENDING - VICTORY',
             description: 'You saved your friends and together defeated Virex. Humanity is free, but the battle for freedom continues.',
             image: 'assets/ending/Good.png'
         }
+
     };
     
     const details = endingDetails[endingId];
@@ -3604,3 +3622,5 @@ async function saveScoreToDatabase(score, endingId = null) {
         console.error("Error saving score:", error);
     }
 }
+
+
