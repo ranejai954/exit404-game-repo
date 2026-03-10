@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://exit404-game-repo.onrender.com/api";
+
 // ================= DATABASE FUNCTIONS =================
 window.API_BASE_URL = 'https://exit404-game-repo-production.up.railway.app/api'; // Flask server URL
 let currentPlayer = {
