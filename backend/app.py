@@ -14,7 +14,7 @@ db_config = {
     "user": os.getenv("MYSQLUSER"),
     "password": os.getenv("MYSQLPASSWORD"),
     "database": os.getenv("MYSQLDATABASE"),
-    "port": int(os.getenv("MYSQLPORT", 3306))
+    "port": int(os.getenv("MYSQLPORT", 55677))
 }
 
 # -----------------------
