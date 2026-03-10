@@ -23,16 +23,6 @@ db_config = {
 def get_connection():
     return mysql.connector.connect(**db_config)
 
-# -----------------------
-# DEBUG ROUTE
-# -----------------------
-@app.route("/debug")
-def debug():
-    return {
-        "host": os.getenv("MYSQLHOST"),
-        "user": os.getenv("MYSQLUSER"),
-        "db": os.getenv("MYSQLDATABASE")
-    }
 
 # -----------------------
 # TEST DATABASE
@@ -42,45 +32,10 @@ def test_db():
     try:
         conn = get_connection()
         conn.close()
-        return {"status": "Database connected successfully"}
+        return {"success": True, "status": "Database connected successfully"}
     except Exception as e:
-        return {"error": str(e)}
+        return {"success": False, "error": str(e)}
 
-# -----------------------
-# INITIALIZE DATABASE
-# -----------------------
-@app.route("/api/init-db")
-def init_db():
-    try:
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS players (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            player_name VARCHAR(50) UNIQUE NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-        """)
-
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS scores (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            player_name VARCHAR(50),
-            total_score INT,
-            ending_type VARCHAR(20),
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-        """)
-
-        conn.commit()
-        cursor.close()
-        conn.close()
-
-        return {"success": True, "message": "Tables created successfully"}
-
-    except Exception as e:
-        return {"error": str(e)}
 
 # -----------------------
 # REGISTER PLAYER
@@ -106,7 +61,8 @@ def register_player():
         return {"success": True}
 
     except Exception as e:
-        return {"error": str(e)}
+        return {"success": False, "error": str(e)}
+
 
 # -----------------------
 # SAVE SCORE
@@ -124,7 +80,10 @@ def save_score():
         cursor = conn.cursor()
 
         cursor.execute(
-            "INSERT INTO scores (player_name, total_score, ending_type) VALUES (%s, %s, %s)",
+            """
+            INSERT INTO scores (player_name, total_score, ending_type)
+            VALUES (%s, %s, %s)
+            """,
             (player_name, total_score, ending_type)
         )
 
@@ -135,7 +94,8 @@ def save_score():
         return {"success": True}
 
     except Exception as e:
-        return {"error": str(e)}
+        return {"success": False, "error": str(e)}
+
 
 # -----------------------
 # LEADERBOARD
@@ -143,6 +103,8 @@ def save_score():
 @app.route("/api/leaderboard")
 def leaderboard():
     try:
+        limit = request.args.get("limit", 10)
+
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
@@ -150,18 +112,22 @@ def leaderboard():
         SELECT player_name, total_score, ending_type, created_at
         FROM scores
         ORDER BY total_score DESC
-        LIMIT 10
-        """)
+        LIMIT %s
+        """, (limit,))
 
         scores = cursor.fetchall()
 
         cursor.close()
         conn.close()
 
-        return jsonify(scores)
+        return jsonify({
+            "success": True,
+            "leaderboard": scores
+        })
 
     except Exception as e:
-        return {"error": str(e)}
+        return {"success": False, "error": str(e)}
+
 
 # -----------------------
 # ROOT
@@ -169,6 +135,7 @@ def leaderboard():
 @app.route("/")
 def home():
     return {"message": "Game backend running"}
+
 
 # -----------------------
 # RUN SERVER
