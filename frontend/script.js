@@ -1,3 +1,4 @@
+const API_BASE_URL = "https://exit404-game-repo.onrender.com/api";
 // ================= DATABASE FUNCTIONS =================
 window.API_BASE_URL = 'https://exit404-game-repo-production.up.railway.app/api'; // Flask server URL
 let currentPlayer = {
@@ -21,86 +22,73 @@ async function testDatabase() {
 // Register or get player from database
 async function registerPlayerInDatabase(playerName) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/register`, {
-            method: 'POST',
+        const response = await fetch(`${API_BASE_URL}/register`, {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 player_name: playerName
             })
         });
-        
+
         const data = await response.json();
-        
-        if (data.success) {
-            currentPlayer.id = data.player_id;
-            currentPlayer.name = playerName;
-            
-            // Update localStorage with database data
-            localStorage.setItem('exit404_player_id', data.player_id.toString());
-            localStorage.setItem('exit404_player_name', playerName);
-            
-            console.log(`Player registered: ${playerName} (ID: ${data.player_id})`);
-            return true;
-        } else {
-            console.error('Failed to register player:', data.error);
-            return false;
+
+        if (!data.success) {
+            console.error("Player registration failed:", data.error);
         }
+
     } catch (error) {
-        console.error('Error registering player:', error);
-        // Fallback to localStorage if database is unavailable
-        return false;
+        console.error("Error registering player:", error);
     }
 }
 
 // Save score to database
-async function saveScoreToDatabase(scores, endingId = null) {
-    const playerName = localStorage.getItem('exit404_player_name') || 'Anonymous';
-    const totalScore = scores?.total || 0;
-    
+async function saveScoreToDatabase(playerName, score, endingType) {
     try {
         const response = await fetch(`${API_BASE_URL}/save-score`, {
-            method: 'POST',
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 player_name: playerName,
-                total_score: totalScore,
-                ending_type: endingId
+                total_score: score,
+                ending_type: endingType
             })
         });
-        
+
         const data = await response.json();
-        
-        if (data.success) {
-            console.log('Score saved to database successfully');
-            return true;
-        } else {
-            console.error('Failed to save score:', data.error);
-            return false;
+
+        if (!data.success) {
+            console.error("Failed to save score:", data.error);
         }
+
     } catch (error) {
-        console.error('Error saving score:', error);
-        return false;
+        console.error("Error saving score:", error);
     }
 }
 
 // Get leaderboard from database
-async function getLeaderboardFromDatabase(limit = 20) {
+async function getLeaderboardFromDatabase(limit = 10) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/leaderboard?limit=${limit}`);
+        const response = await fetch(`${API_BASE_URL}/leaderboard?limit=${limit}`);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error ${response.status}`);
+        }
+
         const data = await response.json();
-        
+
         if (data.success) {
             return data.leaderboard;
         } else {
-            console.error('Failed to get leaderboard:', data.error);
+            console.error("Failed to get leaderboard:", data.error);
             return [];
         }
+
     } catch (error) {
-        console.error('Error getting leaderboard:', error);
+        console.error("Error getting leaderboard:", error);
         return [];
     }
 }
