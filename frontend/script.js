@@ -9,7 +9,7 @@ let currentPlayer = {
 // Test database connection
 async function testDatabase() {
     try {
-        const response = await fetch(`${API_BASE_URL}/test-db`);
+        const response = await fetch(`${API_BASE_URL}/api/test-db`);
         const data = await response.json();
         return data.success;
     } catch (error) {
@@ -21,7 +21,7 @@ async function testDatabase() {
 // Register or get player from database
 async function registerPlayerInDatabase(playerName) {
     try {
-        const response = await fetch(`${API_BASE_URL}/register`, {
+        const response = await fetch(`${API_BASE_URL}/api/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ async function saveScoreToDatabase(scores, endingId = null) {
 // Get leaderboard from database
 async function getLeaderboardFromDatabase(limit = 20) {
     try {
-        const response = await fetch(`${API_BASE_URL}/leaderboard?limit=${limit}`);
+        const response = await fetch(`${API_BASE_URL}/api/leaderboard?limit=${limit}`);
         const data = await response.json();
         
         if (data.success) {
